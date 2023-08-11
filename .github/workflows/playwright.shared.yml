@@ -13,10 +13,21 @@ on:
         type: string
 
 jobs:
+
+  debug:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Print GitHub event
+        run: cat $GITHUB_EVENT_PATH
+      - name: Debug step
+        if: github.event.sender.login != 'vercel[bot]' && github.ref != 'refs/heads/main'
+        run: |
+          echo "This will run only if it's not the vercel[bot] and it's not the main branch"
+
   test:
     name: Run E2E tests with Playwright
-
-    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && github.ref != 'refs/heads/main'
     timeout-minutes: 60
     runs-on: ubuntu-latest
 
